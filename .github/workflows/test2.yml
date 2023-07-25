@@ -1,0 +1,57 @@
+name: Compile Arch Linux Kernel
+
+on:
+  push:
+    branches:
+      - main  # Adjust this to the branch you want to trigger the workflow on
+  workflow_dispatch:
+   inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # We use an Ubuntu runner to run the Docker container
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Set up Docker
+        uses: docker/setup-docker@v1
+
+      - name: Build Kernel Package
+        run: |
+          # Pull the Arch Linux Docker image
+          docker pull archlinux/base
+
+          # Create a temporary directory to hold package output
+          mkdir -p package_output
+
+          # Run the build inside the Arch Linux container
+          docker run --rm -v $PWD:/workdir -w /workdir archlinux/base /bin/bash -c '
+            # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
+            pacman -Sy --noconfirm base-devel devtools
+
+            # Install extra dependencies needed for building the kernel (e.g., git, bc, etc.)
+            # pacman -Sy --noconfirm git bc <other-dependencies>
+
+            # Build the package using makepkg
+            git clone https://aur.archlinux.org/linux-g14.git
+            cd linux-g14
+            wget https://raw.githubusercontent.com/marufmoinuddin/linux-g14-binderfs/main/add-lines.sh
+            chmod +x add-lines.sh
+            sh add-lines.sh
+            makepkg -s --noconfirm --skippgpcheck  # --noconfirm and --skippgpcheck flags are optional, use them if needed
+
+            # Move the generated package files to the artifacts folder
+            mv *.pkg.tar.zst /workdir/package_output
+          '
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: kernel-packages
+          path: package_output/
