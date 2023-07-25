@@ -31,7 +31,7 @@ jobs:
           docker run --rm -v $PWD:/workdir -w /workdir greyltc/archlinux:latest /bin/bash -c "
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
             pacman-key --init
-            pacman -Sy --noconfirm base-devel devtools
+            pacman -Sy --noconfirm --overwrite "*" base-devel devtools 
   
             # Install extra dependencies needed for building the kernel (e.g., git, bc, etc.)
             # pacman -Sy --noconfirm git bc <other-dependencies>
