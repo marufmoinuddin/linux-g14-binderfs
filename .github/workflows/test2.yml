@@ -24,12 +24,7 @@ jobs:
 
       - name: Build Kernel Package
         run: |
-          # Pull the Arch Linux Docker image
-          docker pull archlinux/base
-
-          # Create a temporary directory to hold package output
-          mkdir -p package_output
-
+        
           # Run the build inside the Arch Linux container
           docker run --rm -v $PWD:/workdir -w /workdir greyltc/archlinux:latest /bin/bash -c '
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
