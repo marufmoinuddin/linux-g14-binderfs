@@ -36,14 +36,14 @@ jobs:
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
             pacman-key --init
             pacman -Sy --noconfirm base-devel devtools wget git --overwrite '*'
-            su - builder -c '
+            su - builder -l -c '
               git clone https://aur.archlinux.org/linux-g14.git'
             ls -l
             # Install extra dependencies needed for building the kernel (e.g., bc, etc.)
             pacman -Sy --noconfirm $(awk '/^makedepends=\(/,/\)/ {gsub(/[\(\)]/,""); gsub(/^makedepends= /, ""); print}' linux-g14/PKGBUILD | tr -d '\n' | sed 's/#.*//; s/  */ /g' | sed 's/makedepends=//') --overwrite '*'
   
             # Switch to the 'builder' user and build the package using makepkg
-            su - builder -c '
+            su - builder -l -c '
               cd linux-g14
               wget https://raw.githubusercontent.com/marufmoinuddin/linux-g14-binderfs/main/add-lines.sh
               chmod +x add-lines.sh
