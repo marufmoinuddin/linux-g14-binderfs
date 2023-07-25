@@ -41,7 +41,7 @@ jobs:
               git clone https://aur.archlinux.org/linux-g14.git'
             ls -l
             # Install extra dependencies needed for building the kernel (e.g., bc, etc.)
-            bash -c \"sudo pacman -Sy --noconfirm \$(awk '/^makedepends=\\(/,/\\)/ {gsub(/[\(\)]/,\"\"); gsub(/^makedepends= /, \"\"); print}' linux-g14/PKGBUILD | tr -d '\\n' | sed 's/#.*//; s/  */ /g' | sed 's/makedepends=//') --overwrite '*' \"
+            bash -c \"sudo pacman -Sy --noconfirm \$(awk '/^makedepends=\\(/,/\\)/ {gsub(/[\(\)]/,\"\"); gsub(/^makedepends= /, \"\"); print}' linux-g14/PKGBUILD | tr -d '\\n' | sed 's/#.*//; s/  */ /g' | sed 's/makedepends=//') --needed --overwrite '*' \"
   
             # Switch to the 'builder' user and build the package using makepkg
             su - builder -l -c '              
