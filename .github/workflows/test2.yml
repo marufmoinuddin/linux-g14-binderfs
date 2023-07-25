@@ -31,19 +31,19 @@ jobs:
           docker run --rm -v $PWD:/workdir -w /workdir greyltc/archlinux:latest /bin/bash -c "
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
             pacman-key --init
-            pacman -Sy --noconfirm --overwrite "*" base-devel devtools 
-  
+            pacman -Sy --noconfirm --overwrite "*" base-devel devtools wget git 
+            mkdir -p package_output
             # Install extra dependencies needed for building the kernel (e.g., git, bc, etc.)
             # pacman -Sy --noconfirm git bc <other-dependencies>
-  
-            # Build the package using makepkg
-            git clone https://aur.archlinux.org/linux-g14.git
-            cd linux-g14
-            wget https://raw.githubusercontent.com/marufmoinuddin/linux-g14-binderfs/main/add-lines.sh
-            chmod +x add-lines.sh
-            sh add-lines.sh
-            makepkg -s --noconfirm --skippgpcheck  # --noconfirm and --skippgpcheck flags are optional, use them if needed
-  
+            # Switch to the 'builder' user and build the package using makepkg
+            su - builder -c '
+              git clone https://aur.archlinux.org/linux-g14.git
+              cd linux-g14
+              wget https://raw.githubusercontent.com/marufmoinuddin/linux-g14-binderfs/main/add-lines.sh
+              chmod +x add-lines.sh
+              sh add-lines.sh
+              makepkg -s --noconfirm --skippgpcheck  # --noconfirm and --skippgpcheck flags are optional, use them if needed
+            '
             # Move the generated package files to the artifacts folder
             mv *.pkg.tar.zst /workdir/package_output
           "
