@@ -22,6 +22,15 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v1
 
+      - name: Clean Package Database
+        run: |
+          # Clean the package database and remove conflicting libedit package
+          docker run --rm -v $PWD:/workdir -w /workdir greyltc/archlinux:latest /bin/bash -c "
+            rm -r /var/lib/pacman/sync/*
+            pacman -Sy --noconfirm
+            pacman -Rdd --noconfirm libedit
+          "
+
       - name: Build Kernel Package
         run: |
           # Create a temporary directory to hold package output
