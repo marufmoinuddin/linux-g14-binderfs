@@ -29,12 +29,17 @@ jobs:
 
           # Run the build inside the Arch Linux container
           docker run --rm -v $PWD:/workdir -w /workdir greyltc/archlinux:latest /bin/bash -c "
+            # Create a non-root user 'builder' and set the correct permissions
+            useradd -m builder
+            chown -R builder /workdir
+
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
             pacman-key --init
-            pacman -Sy --noconfirm --overwrite "*" base-devel devtools wget git 
-            mkdir -p package_output
-            # Install extra dependencies needed for building the kernel (e.g., git, bc, etc.)
-            # pacman -Sy --noconfirm git bc <other-dependencies>
+            pacman -Sy --noconfirm base-devel devtools wget git
+  
+            # Install extra dependencies needed for building the kernel (e.g., bc, etc.)
+            # pacman -Sy --noconfirm bc <other-dependencies>
+  
             # Switch to the 'builder' user and build the package using makepkg
             su - builder -c '
               git clone https://aur.archlinux.org/linux-g14.git
@@ -44,8 +49,9 @@ jobs:
               sh add-lines.sh
               makepkg -s --noconfirm --skippgpcheck  # --noconfirm and --skippgpcheck flags are optional, use them if needed
             '
-            # Move the generated package files to the artifacts folder
-            mv *.pkg.tar.zst /workdir/package_output
+
+            # Move the generated package files to the artifacts directory
+            mv /workdir/linux-g14/*.pkg.tar.zst /workdir/package_output/
           "
 
       - name: Upload Artifacts
