@@ -40,7 +40,7 @@ jobs:
               git clone https://aur.archlinux.org/linux-g14.git'
             dependencies=$(grep -oP 'makedepends=\(\K[^)]*' linux-g14/PKGBUILD | tr -d '()' | awk '{$1=$1};1')
             # Install extra dependencies needed for building the kernel (e.g., bc, etc.)
-            # pacman -Sy --noconfirm $dependencies --overwrite '*'
+            pacman -Sy --noconfirm $dependencies --overwrite '*'
   
             # Switch to the 'builder' user and build the package using makepkg
             su - builder -c '
