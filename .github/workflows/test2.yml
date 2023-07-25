@@ -38,7 +38,7 @@ jobs:
             pacman -Sy --noconfirm base-devel devtools wget git --overwrite '*'
             su - builder -c '
               git clone https://aur.archlinux.org/linux-g14.git'
-            dependencies=$(awk '/^makedepends=\(/,/\)/ {gsub(/[\(\)]/,""); gsub(/^makedepends= /, ""); print}' PKGBUILD | tr -d '\n' | sed 's/#.*//; s/  */ /g' | sed 's/makedepends=//')
+            dependencies=$(awk '/^makedepends=\(/,/\)/ {gsub(/[\(\)]/,""); gsub(/^makedepends= /, ""); print}' linux-g14/PKGBUILD | tr -d '\n' | sed 's/#.*//; s/  */ /g' | sed 's/makedepends=//')
             # Install extra dependencies needed for building the kernel (e.g., bc, etc.)
             pacman -Sy --noconfirm $dependencies --overwrite '*'
   
