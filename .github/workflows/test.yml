@@ -1,0 +1,42 @@
+name: Build Linux-g14 Kernel
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Clone linux-g14 repository
+      run: git clone https://aur.archlinux.org/linux-g14.git
+
+    - name: Copy add-lines.sh to linux-g14 directory
+      run: cp add-lines.sh linux-g14/
+
+    - name: Modify PKGBUILD with add-lines.sh
+      run: |
+        cd linux-g14
+        bash add-lines.sh
+
+    - name: Build and Validate Arch Linux package
+      uses: hapakaien/archlinux-package-action@v2
+      with:
+        path: linux-g14 # Set the path to the linux-g14 directory containing PKGBUILD
+        flags: '-s --noconfirm' # Custom flags for makepkg command
+
+    - name: Move package to the artifacts directory
+      run: |
+        mkdir -p $HOME/artifacts
+        mv linux-g14/*.pkg.tar.zst $HOME/artifacts/
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-g14-kernel-packages
+        path: $HOME/artifacts/
