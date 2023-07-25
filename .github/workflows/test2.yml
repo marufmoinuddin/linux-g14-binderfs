@@ -31,8 +31,9 @@ jobs:
           mkdir -p package_output
 
           # Run the build inside the Arch Linux container
-          docker run --rm -v $PWD:/workdir -w /workdir archlinux/base /bin/bash -c '
+          docker run --rm -v $PWD:/workdir -w /workdir archlinux/archlinux:latest /bin/bash -c '
             # Install required dependencies (you may need to adjust this based on your kernel's build dependencies)
+            pacman-key --init
             pacman -Sy --noconfirm base-devel devtools
 
             # Install extra dependencies needed for building the kernel (e.g., git, bc, etc.)
