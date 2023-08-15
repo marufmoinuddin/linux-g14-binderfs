@@ -16,8 +16,8 @@ sudo pacman -Sy --noconfirm $makedepends --needed --overwrite '*'
 # Build the package using makepkg
 cp add-lines.sh linux-g14/add-lines.sh
 chmod +x linux-g14/add-lines.sh
-sh linux-g14/add-lines.sh
 cd linux-g14
+sh add-lines.sh
 makepkg -s --noconfirm --skippgpcheck
 
 # Move the generated package files 
